@@ -1,0 +1,31 @@
+Whale Visual Brand Book V1 01 / 03
+Brand identity
+Ухаан төлөвшүүлнэ.
+Үеийг бүтээнэ.
+Мэдлэг бол ирээдүйн хүч.
+Хүмүүжил бол үеийн өв.
+Personality
+Тайван
+Зоримог
+Ухаан
+Үе дамжсан
+Урт удаан
+Color
+Primary
+#0F766E
+Secondary
+#D5F0E8
+Accent
+#E9B872
+Neutral
+#F5FAF8
+Typography
+AaIBM Plex Mono
+Heading
+Ухаан төлөвшүүлнэ.
+АБВГДЕЖЗИЙКЛМНОӨПРСТУҮФХЦЧШЩЫЭЮЯ
+AaRoboto Mono
+Body
+Мэдлэг бол ирээдүйн хүч.
+абвгдежзийклмноөпрстуүфхцчшщыэюя ₮ 0123456789
+Roboto Mono-ийн TTF олдоогүй тул body-ийн харагдац IBM Plex Mono Regular-аар түр харуулав.

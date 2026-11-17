@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run dashboard web app",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"-u",
+				"app.py"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

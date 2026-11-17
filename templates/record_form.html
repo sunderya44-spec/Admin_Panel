@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if record %}Засах{% else %}Нэмэх{% endif %} | {{ config.title }} | Whale</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <img class="brand-logo small" src="{{ url_for('static', filename='logo-whale.png') }}" alt="Whale лого">
+      <span class="brand-wordmark">Whale</span>
+    </a>
+  </header>
+  <main class="form-page">
+    <a class="back-link" href="{{ url_for('manage_records', entity=entity) }}">← {{ config.title }} руу буцах</a>
+    <section class="card record-form-card">
+      <p class="eyebrow">{{ config.title }}</p>
+      <h1>{% if record %}Мэдээлэл засах{% else %}Шинэ мэдээлэл нэмэх{% endif %}</h1>
+      {% if error %}
+        <div class="alert" role="alert">{{ error }}</div>
+      {% endif %}
+      <form method="post" class="record-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {% for field in config.fields %}
+          <label for="{{ field.name }}">{{ field.label }}{% if field.required %} *{% endif %}</label>
+          {% if field.type == 'textarea' %}
+            <textarea id="{{ field.name }}" name="{{ field.name }}" rows="4"{% if field.required %} required{% endif %}>{{ values.get(field.name, '') }}</textarea>
+          {% else %}
+            <input id="{{ field.name }}" name="{{ field.name }}" type="{{ field.type }}" value="{{ values.get(field.name, '') }}" {% if field.type == 'number' and field.name == 'duration_days' %}min="1" step="1"{% elif field.type == 'number' %}min="0" step="0.01"{% endif %}{% if field.required %} required{% endif %}>
+          {% endif %}
+        {% endfor %}
+        <div class="form-actions">
+          <button type="submit">{% if record %}Хадгалах{% else %}Нэмэх{% endif %}</button>
+          <a class="cancel-link" href="{{ url_for('manage_records', entity=entity) }}">Болих</a>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

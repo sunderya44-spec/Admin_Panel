@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Устгах уу? | {{ config.title }} | Whale</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <img class="brand-logo small" src="{{ url_for('static', filename='logo-whale.png') }}" alt="Whale лого">
+      <span class="brand-wordmark">Whale</span>
+    </a>
+  </header>
+  <main class="form-page">
+    <section class="card confirm-card">
+      <p class="eyebrow">{{ config.title }}</p>
+      <h1>Устгах уу?</h1>
+      <p class="muted">“{{ record.get('name') or record.get('title') or record.get('email') or record.get('id') }}” мэдээллийг устгах гэж байна. Энэ үйлдлийг буцаах боломжгүй.</p>
+      <form method="post" class="form-actions">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="danger-button" type="submit" name="confirmed" value="yes">Тийм, устга</button>
+        <a class="cancel-link" href="{{ url_for('manage_records', entity=entity) }}">Болих</a>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

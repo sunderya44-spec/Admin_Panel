@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Whale | Брэндийн самбар</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <img class="brand-logo small" src="{{ url_for('static', filename='logo-whale.png') }}" alt="Whale лого">
+      <span class="brand-wordmark">Whale</span>
+    </a>
+
+    <div class="account">
+      <span class="account-email">{{ email }}</span>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="secondary-button" type="submit">Гарах</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="dashboard-shell">
+    <aside class="sidebar card">
+      <nav class="side-nav" aria-label="Самбарын цэс">
+        <button class="nav-item active" type="button" data-tab="content">Контент</button>
+        <button class="nav-item" type="button" data-tab="facebook">Facebook</button>
+        <button class="nav-item" type="button" data-tab="chat">Чат</button>
+        <button class="nav-item" type="button" data-tab="orders">Захиалга</button>
+        <a class="nav-item" href="{{ url_for('manage_records', entity='tours') }}">Аялал</a>
+        <a class="nav-item" href="{{ url_for('manage_records', entity='staff') }}">Ажилтан</a>
+      </nav>
+    </aside>
+
+    <section class="dashboard-main">
+      <div class="tab-panel active" id="content-panel">
+        <p class="eyebrow">АГУУЛГА</p>
+        <h1>Ноорог нийтлэл</h1>
+        <p class="muted">Нийт {{ drafts|length }} ноорог • Мэдлэг бол ирээдүйн хүч.</p>
+
+        {% if error %}
+          <div class="alert" role="alert">{{ error }}</div>
+        {% elif drafts %}
+          <section class="draft-list" aria-label="Ноорог нийтлэл">
+            {% for draft in drafts %}
+              <article class="card draft-card">
+                <div class="draft-heading">
+                  <h2>{{ draft.get('title', 'Гарчиггүй ноорог') }}</h2>
+                  <span class="badge">Хүлээгдэж буй</span>
+                </div>
+                <p>{{ draft.get('content', '') }}</p>
+                <div class="draft-meta">
+                  <time>{{ draft.get('created_at', '') }}</time>
+                  <div class="draft-actions">
+                    <form method="post" action="{{ url_for('update_draft_status', draft_id=draft.get('id'), action='approve') }}">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                      <button class="mini-button approve" type="submit">Батлах</button>
+                    </form>
+                    <form method="post" action="{{ url_for('update_draft_status', draft_id=draft.get('id'), action='reject') }}">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                      <button class="mini-button reject" type="submit">Татгалзах</button>
+                    </form>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </section>
+        {% else %}
+          <section class="card empty-state">
+            <h2>Одоогоор ноорог алга</h2>
+            <p class="muted">Supabase дахь content_drafts хүснэгтэд draft төлөвтэй нийтлэл нэмнэ үү.</p>
+          </section>
+        {% endif %}
+      </div>
+
+      <div class="tab-panel" id="facebook-panel">
+        <p class="eyebrow">SOCIAL</p>
+        <h1>Facebook</h1>
+        <div class="status-box">
+          <span>Удахгүй</span>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="chat-panel">
+        <p class="eyebrow">SOCIAL</p>
+        <h1>Чат</h1>
+        <div class="status-box">
+          <span>Удахгүй</span>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="orders-panel">
+        <p class="eyebrow">ЗАХИАЛГА</p>
+        <h1>Захиалгууд</h1>
+        <div class="table-wrap card">
+          <table>
+            <thead>
+              <tr>
+                <th>Захиалагч</th>
+                <th>Бүтээгдэхүүн</th>
+                <th>Тоо хэмжээ</th>
+                <th>Төлбөр</th>
+                <th>Төлөв</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Энхжаргал</td>
+                <td>Whale навч сурталчилгаа</td>
+                <td>3</td>
+                <td>240,000₮</td>
+                <td><span class="status-pill pending">Шинэ</span></td>
+              </tr>
+              <tr>
+                <td>Билгүүн</td>
+                <td>Бренд зураг</td>
+                <td>1</td>
+                <td>180,000₮</td>
+                <td><span class="status-pill progress">Бэлтгэж байна</span></td>
+              </tr>
+              <tr>
+                <td>Гүнжид</td>
+                <td>Социал медиа контент</td>
+                <td>5</td>
+                <td>360,000₮</td>
+                <td><span class="status-pill done">Бэлэн</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const navItems = document.querySelectorAll('.nav-item');
+    const panels = document.querySelectorAll('.tab-panel');
+    const requestedTab = new URLSearchParams(window.location.search).get('tab');
+    const initialTab = ['content', 'facebook', 'chat', 'orders'].includes(requestedTab)
+      ? requestedTab
+      : 'content';
+
+    navItems.forEach((button) => {
+      if (button.tagName !== 'BUTTON') return;
+      button.addEventListener('click', () => {
+        navItems.forEach((item) => item.classList.toggle('active', item === button));
+        panels.forEach((panel) => {
+          const shouldShow = panel.id === `${button.dataset.tab}-panel`;
+          panel.classList.toggle('active', shouldShow);
+        });
+      });
+    });
+    navItems.forEach((item) => {
+      item.classList.toggle('active', item.dataset.tab === initialTab);
+    });
+    panels.forEach((panel) => {
+      panel.classList.toggle('active', panel.id === `${initialTab}-panel`);
+    });
+  </script>
+</body>
+</html>

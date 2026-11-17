@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ config.title }} | Whale</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <img class="brand-logo small" src="{{ url_for('static', filename='logo-whale.png') }}" alt="Whale лого">
+      <span class="brand-wordmark">Whale</span>
+    </a>
+    <div class="account">
+      <span class="account-email">{{ email }}</span>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="secondary-button" type="submit">Гарах</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="dashboard-shell">
+    <aside class="sidebar card">
+      <nav class="side-nav" aria-label="Самбарын цэс">
+        <a class="nav-item" href="{{ url_for('dashboard') }}?tab=content">Контент</a>
+        <a class="nav-item" href="{{ url_for('dashboard') }}?tab=facebook">Facebook</a>
+        <a class="nav-item" href="{{ url_for('dashboard') }}?tab=chat">Чат</a>
+        <a class="nav-item" href="{{ url_for('dashboard') }}?tab=orders">Захиалга</a>
+        <a class="nav-item{% if entity == 'tours' %} active{% endif %}" href="{{ url_for('manage_records', entity='tours') }}">Аялал</a>
+        <a class="nav-item{% if entity == 'staff' %} active{% endif %}" href="{{ url_for('manage_records', entity='staff') }}">Ажилтан</a>
+      </nav>
+    </aside>
+
+    <section class="dashboard-main">
+      <p class="eyebrow">МЭДЭЭЛЛИЙН САН</p>
+      <h1>{{ config.title }}</h1>
+
+      {% if error %}
+        <div class="alert" role="alert">{{ error }}</div>
+      {% endif %}
+      {% if success %}
+        <div class="success-message" role="status">{{ success }}</div>
+      {% endif %}
+
+      <div class="manage-toolbar">
+        <form class="search-form" method="get" action="{{ url_for('manage_records', entity=entity) }}">
+          <label class="visually-hidden" for="record-search">Хайх</label>
+          <input id="record-search" name="q" type="search" value="{{ search }}" placeholder="Хайх...">
+          <button class="mini-button" type="submit">Хайх</button>
+        </form>
+        <a class="action-link" href="{{ url_for('add_managed_record', entity=entity) }}">+ {{ config.singular|capitalize }} нэмэх</a>
+      </div>
+
+      {% if records %}
+        <div class="table-wrap card">
+          <table class="manage-table">
+            <thead>
+              <tr>
+                {% for field in config.fields %}
+                  <th>{{ field.label }}</th>
+                {% endfor %}
+                <th>Үйлдэл</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr>
+                  {% for field in config.fields %}
+                    <td>{{ record.get(field.name) or '—' }}</td>
+                  {% endfor %}
+                  <td>
+                    <div class="record-actions">
+                      <a href="{{ url_for('edit_managed_record', entity=entity, record_id=record.get('id')) }}">Засах</a>
+                      <a class="delete-link" href="{{ url_for('delete_managed_record', entity=entity, record_id=record.get('id')) }}">Устгах</a>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <section class="card empty-state">
+          <h2>{% if search %}Хайсан зүйл олдсонгүй{% else %}Одоогоор мэдээлэл алга{% endif %}</h2>
+          <p class="muted">{% if search %}Өөр үгээр хайж үзнэ үү.{% else %}Шинэ мэдээлэл нэмэх товчийг дарна уу.{% endif %}</p>
+        </section>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>
